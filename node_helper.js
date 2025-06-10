@@ -1,6 +1,7 @@
 'use strict';
 const NodeHelper = require('node_helper');
 const mqtt = require('mqtt');
+const puppeteer = require('puppeteer');
 const si = require('systeminformation');
 const { exec } = require('child_process');
 // const Gpio = require('onoff').Gpio;
@@ -109,6 +110,9 @@ module.exports = NodeHelper.create({
     if (this.config.pm2ProcessName) {
       topics.push(`${this.setTopic}/restart`);
     }
+    if (this.config.refreshBrowser) {
+      topics.push(`${this.setTopic}/refresh`);
+    }
     this.client.subscribe(topics, (err, granted) => {
       if (err) {
         console.error('[MMM-HomeAssistant] Failed to subscribe to set topics:', err);
@@ -152,6 +156,11 @@ module.exports = NodeHelper.create({
       if (topic === `${this.setTopic}/restart`) {
         console.log('[MMM-HomeAssistant] Restart command received.');
         this.handleRestart();
+      }
+
+      if (topic === `${this.setTopic}/refresh`) {
+        console.log('[MMM-HomeAssistant] Refresh command received.');
+        this.handleRefresh();
       }
     });
   },
@@ -222,6 +231,26 @@ module.exports = NodeHelper.create({
         pm2.disconnect();
       });
     });
+  },
+
+  handleRefresh: async function () {
+    const url = 'http://localhost:8080';
+    let browser;
+    try {
+      browser = await puppeteer.launch({
+        headless: true,
+        executablePath: '/usr/bin/chromium-browser', // or '/usr/bin/chromium' on some systems
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      });
+      const page = await browser.newPage();
+      await page.goto(url, { waitUntil: 'networkidle0' });
+      await browser.close();
+      console.log(`[MMM-HomeAssistant] Opened and closed ${url}`);
+    } catch (err) {
+      console.error(`[MMM-HomeAssistant] Error refreshing browser:`, err);
+    } finally {
+      if (browser) await browser.close();
+    }
   },
 
   publishConfigs: async function () {
@@ -313,6 +342,26 @@ module.exports = NodeHelper.create({
         const combinedJson = { ...deviceJson, ...restartButtonJson };
 
         topics.push(restartConfigTopic);
+        payloads.push(JSON.stringify(combinedJson));
+      }
+
+      if (this.config.refreshBrowser) {
+        const refreshButtonJson = {
+          availability_topic: this.availabilityTopic,
+          command_topic: `${this.setTopic}/refresh`,
+          device_class: "restart",
+          payload_press: "identify",
+          entity_category: "diagnostic",
+          name: 'Refresh Browser',
+          object_id: `${deviceId}_refresh_browser`,
+          unique_id: `${deviceId}_refresh_browser`,
+        };
+
+        // Publish light configuration to MQTT autodiscovery topic
+        const refreshConfigTopic = `${this.config.autodiscoveryTopic}/button/${deviceId}/refresh/config`;
+        const combinedJson = { ...deviceJson, ...refreshButtonJson };
+
+        topics.push(refreshConfigTopic);
         payloads.push(JSON.stringify(combinedJson));
       }
 

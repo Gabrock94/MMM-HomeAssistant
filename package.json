@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "mqtt": "^5.12.1",
+    "puppeteer": "^24.10.0",
     "systeminformation": "^5.27.1"
   }
 }

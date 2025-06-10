@@ -62,6 +62,7 @@ To use this module, add it to the modules array in the `config/config.js` file:
         monitorOnCommand: 'xrandr -d :0 --output HDMI-1 --auto --rotate right',
         monitorOffCommand: 'xrandr -d :0 --output HDMI-1 --off',
         pm2ProcessName: 'mm',
+        refreshBrowser: true
     }
 },
 ```
@@ -84,6 +85,7 @@ To use this module, add it to the modules array in the `config/config.js` file:
 | `monitorOffCommand`   | string   | *(none)*            | Shell command to turn off the monitor.                                                                              |
 | `moduleControl`       | boolean  | `true`              | Make modules controllable as switch entities.                                                                       |
 | `pm2ProcessName`      | string   | *(none)*            | If set, allows MagicMirror to be restarted via Home Assistant.                                                      |
+| `refreshBrowser`      | boolean  | `true`              | If enabled, will programmatically open and close a browser to refresh MagicMirror clients on other instances.       |
 
 ## Home Assistant Integration
 

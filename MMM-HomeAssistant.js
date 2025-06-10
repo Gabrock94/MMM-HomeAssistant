@@ -8,6 +8,7 @@ Module.register("MMM-HomeAssistant", {
     monitorStatusCommand: "echo true",
     monitorOnCommand: "",
     monitorOffCommand: "",
+    refreshBrowser: true,
   },
 
   start: function () {
