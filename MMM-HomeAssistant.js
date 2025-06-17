@@ -17,7 +17,7 @@ Module.register("MMM-HomeAssistant", {
   },
 
   getStyles: function () {
-    return ["MMM-HomeAssistant.css"]; // optional
+    return ["MMM-HomeAssistant.css"];
   },
 
   getDom: function () {
