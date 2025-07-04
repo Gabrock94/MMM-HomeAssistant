@@ -61,7 +61,7 @@ To use this module, add it to the modules array in the `config/config.js` file:
         monitorStatusCommand: 'wlr-randr | awk \'/^HDMI-A-1 / {found=1} /^  Enabled:/ && found {print ($2 == "yes") ? "true" : "false"; exit}\'',        
         monitorOnCommand: 'wlr-randr --output HDMI-A-1 --on',
         monitorOffCommand: 'wlr-randr --output HDMI-A-1 --off',
-        pm2ProcessName: 'mm',
+        pm2ProcessName: 'magicmirror',
         refreshBrowser: true
     }
 },
