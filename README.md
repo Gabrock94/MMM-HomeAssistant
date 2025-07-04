@@ -58,9 +58,9 @@ To use this module, add it to the modules array in the `config/config.js` file:
         monitorControl: true,
         brightnessControl: true,
         moduleControl: true,
-        monitorStatusCommand: 'xrandr --query | awk \'/Screen/ {print ($8 > 320) ? "true" : "false"}\'',
-        monitorOnCommand: 'xrandr -d :0 --output HDMI-1 --auto --rotate right',
-        monitorOffCommand: 'xrandr -d :0 --output HDMI-1 --off',
+        monitorStatusCommand: 'wlr-randr | awk \'/^HDMI-A-1 / {found=1} /^  Enabled:/ && found {print ($2 == "yes") ? "true" : "false"; exit}\'',        
+        monitorOnCommand: 'wlr-randr --output HDMI-A-1 --on',
+        monitorOffCommand: 'wlr-randr --output HDMI-A-1 --off',
         pm2ProcessName: 'mm',
         refreshBrowser: true
     }
